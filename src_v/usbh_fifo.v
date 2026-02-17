@@ -36,7 +36,7 @@ module usbh_fifo
 (
     // Inputs
      input           clk_i
-    ,input           rst_i
+    ,input           n_rst_i
     ,input  [  7:0]  data_i
     ,input           push_i
     ,input           pop_i
@@ -70,8 +70,8 @@ reg [COUNT_W-1:0]       count;
 //-----------------------------------------------------------------
 // Sequential
 //-----------------------------------------------------------------
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
 begin
     count   <= {(COUNT_W) {1'b0}};
     rd_ptr  <= {(ADDR_W) {1'b0}};

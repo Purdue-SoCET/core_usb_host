@@ -45,7 +45,7 @@ module usbh_sie
 (
     // Inputs
      input           clk_i
-    ,input           rst_i
+    ,input           n_rst_i
     ,input           start_i
     ,input           in_transfer_i
     ,input           sof_transfer_i
@@ -346,8 +346,8 @@ begin
 end
 
 // Update state
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     state_q   <= STATE_IDLE;
 else
     state_q   <= next_state_r;
@@ -355,8 +355,8 @@ else
 //-----------------------------------------------------------------
 // Tx Token
 //-----------------------------------------------------------------
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     token_q         <= 16'h0000;
 else if (state_q == STATE_IDLE)
     token_q         <= {token_dev_i, token_ep_i, 5'b0};
@@ -371,8 +371,8 @@ reg [1:0] utmi_linestate_q;
 reg       se0_detect_q;
 reg       wait_eop_q;
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     utmi_linestate_q <= 2'b0;
 else
     utmi_linestate_q <= utmi_linestate_i;
@@ -380,8 +380,8 @@ else
 // SE0 filtering (2 cycles FS)
 wire se0_detect_w = (utmi_linestate_q == 2'b00 && utmi_linestate_i == 2'b00);
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     se0_detect_q <= 1'b0;
 else
     se0_detect_q <= se0_detect_w;
@@ -390,8 +390,8 @@ else
 wire eop_detected_w = se0_detect_q & (utmi_linestate_i != 2'b00);
 
 // End of transmit detection
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     wait_eop_q <= 1'b0;
 else if (eop_detected_w)
     wait_eop_q <= 1'b0;
@@ -405,8 +405,8 @@ else if (rx_active_rise_w)
 localparam TX_IFS_W = 4;
 reg [TX_IFS_W-1:0] tx_ifs_q;
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     tx_ifs_q <= {(TX_IFS_W){1'b0}};
 // Start counting down from last Tx or EOP being detected at end of Rx
 else if (wait_eop_q || eop_detected_w)
@@ -420,8 +420,8 @@ assign ifs_busy_w = wait_eop_q || (tx_ifs_q != {(TX_IFS_W){1'b0}});
 //-----------------------------------------------------------------
 // Tx Timer
 //-----------------------------------------------------------------
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     last_tx_time_q <= 9'd0;
 // Start counting from last Tx
 else if (state_q == STATE_IDLE || (utmi_txvalid_o && utmi_txready_i))
@@ -433,8 +433,8 @@ else if (last_tx_time_q != RX_TIMEOUT)
 //-----------------------------------------------------------------
 // Transmit / Receive counter
 //-----------------------------------------------------------------
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     byte_count_q <= 16'h0000;
 // New transfer request (not automatic SOF request)
 else if (state_q == STATE_IDLE && start_i && !sof_transfer_i)
@@ -455,8 +455,8 @@ else if (state_q == STATE_RX_DATA && data_ready_w && !crc_byte_w)
 //-----------------------------------------------------------------
 // Transfer start ack
 //-----------------------------------------------------------------
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     start_ack_q  <= 1'b0;
 // First byte of PID sent, ack transfer request
 else if (state_q == STATE_TX_TOKEN1 && utmi_txready_i)
@@ -467,8 +467,8 @@ else
 //-----------------------------------------------------------------
 // Record request details
 //-----------------------------------------------------------------
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
 begin
     in_transfer_q   <= 1'b0;
     send_ack_q      <= 1'b0;
@@ -497,8 +497,8 @@ end
 //-----------------------------------------------------------------
 // Response expected
 //-----------------------------------------------------------------
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     wait_resp_q <= 1'b0;
 // Incoming data
 else if (state_q == STATE_RX_WAIT && data_ready_w)
@@ -509,9 +509,9 @@ else if (state_q == STATE_IDLE && start_i)
 //-----------------------------------------------------------------
 // Status
 //-----------------------------------------------------------------
-always @ (posedge clk_i or posedge rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
 begin
-   if (rst_i)
+   if (!n_rst_i)
    begin
        status_response_q    <= 8'h00;
        status_timeout_q     <= 1'b0;
@@ -602,14 +602,14 @@ reg [3:0]  rx_active_q;
 
 wire shift_en_w = (utmi_rxvalid_i & utmi_rxactive_i) || !utmi_rxactive_i;
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     data_buffer_q <= 32'b0;
 else if (shift_en_w)
     data_buffer_q <= {utmi_data_i, data_buffer_q[31:8]};
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     data_valid_q <= 4'b0;
 else if (shift_en_w)
     data_valid_q <= {(utmi_rxvalid_i & utmi_rxactive_i), data_valid_q[3:1]};
@@ -617,14 +617,14 @@ else
     data_valid_q <= {data_valid_q[3:1], 1'b0};
 
 reg [1:0] data_crc_q;
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     data_crc_q <= 2'b0;
 else if (shift_en_w)
     data_crc_q <= {!utmi_rxactive_i, data_crc_q[1]};
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     rx_active_q <= 4'b0;
 else
     rx_active_q <= {utmi_rxactive_i, rx_active_q[3:1]};
@@ -659,9 +659,9 @@ u_crc5
 );
 
 // CRC control / check
-always @ (posedge clk_i or posedge rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
 begin
-   if (rst_i)
+   if (!n_rst_i)
    begin
        crc_sum_q          <= 16'hFFFF;
        status_crc_err_q   <= 1'b0;
