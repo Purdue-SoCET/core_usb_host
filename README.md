@@ -1,3 +1,12 @@
+### SOCET SIMULATION:
+
+for fusesoc build:
+
+fusesoc run --target=sim socet:usb:core_usb_host:1.0.0
+
+(WAVES/TRACES ARE ENABLED)
+
+
 ### USB 1.1 Host Controller
 
 This IP core is a cutdown USB host controller which allows communications with full-speed (12mbps) USB devices.

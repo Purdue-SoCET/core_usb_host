@@ -1,9 +1,13 @@
 #include <verilated.h>
 #include "Vusbh_host_tb_wrapper.h"
 #include <iostream>
+#include <verilated_fst_c.h>
+#include "tusb.h"
 
 Vusbh_host_tb_wrapper* top;
 vluint64_t main_time = 0;
+
+VerilatedFstC *tracep = nullptr;
 
 extern "C" int app_main(void);
 
@@ -11,12 +15,19 @@ extern "C" int app_main(void);
 // void tick() {
 // To this:
 extern "C" void tick() {
-    top->clk_i = 1;
-    top->eval();
-    main_time += 5;
     top->clk_i = 0;
-    top->eval();
     main_time += 5;
+    top->eval();
+    tracep->dump(main_time);
+    top->clk_i = 1;
+    main_time += 5;
+    top->eval();
+    tracep->dump(main_time);
+
+    // If hardware interrupt is high, tell TinyUSB to check status registers
+    if (top->intr_o) {
+        hcd_int_handler(0, true); 
+    }
 }
 
 void reset_ip() {
@@ -67,11 +78,17 @@ extern "C" uint32_t usbhw_reg_read(uint32_t addr) {
 
 int main(int argc, char** argv) {
     Verilated::commandArgs(argc, argv);
+
+    Verilated::traceEverOn(true);
     top = new Vusbh_host_tb_wrapper;
+    tracep = new VerilatedFstC;
+    top->trace(tracep, 99);
+    tracep->open("waveform.fst");
 
     reset_ip();
     app_main();
 
+    tracep->close();
     delete top;
     return 0;
 }

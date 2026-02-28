@@ -5,46 +5,38 @@ description: USB Host IP with Verilator TinyUSB testbench
 filesets:
   rtl:
     depend:
-      # Add the new AHB interface dependency here
       - socet:bus-components:ahb_if
-      - socet:bus-components:bus_protocol_if # <-- ADD THIS LINE
-      # Note: If bus_protocol_if is also a separate core, add it here too!
-      # - socet:digital-lib:bus_protocol 
+      - socet:bus-components:bus_protocol_if
     files:
-      # If bus_protocol_if is NOT a separate core, include its file path here instead:
-      # - ../common/bus_protocol_if.sv
       - src_v/usbh_host_defs.v: {is_include_file: true}
       - src_v/usbh_crc5.v
       - src_v/usbh_crc16.v
       - src_v/usbh_fifo.v
       - src_v/usbh_sie.v
       - src_v/usbh_host.sv
-      - src_v/usbh_host_tb_wrapper.sv # Our new top-level wrapper
+      - src_v/usbh_host_tb_wrapper.sv
     file_type: systemVerilogSource
 
   software_tb:
     files:
-      - software_test/test_top.cpp : {file_type: cppSource}
-      - software_test/main.c : {file_type: cSource}
-      - ../tinyusb/src/portable/aft/aftx07/hcd_aftx07.c : {file_type: cSource}
-      - ../tinyusb/src/tusb.c : {file_type: cSource}
-      - ../tinyusb/src/common/tusb_fifo.c : {file_type: cSource}
-      - ../tinyusb/src/host/usbh.c : {file_type: cSource}
-      - ../tinyusb/src/host/hub.c : {file_type: cSource}
-    
+      - software_test/test_top.cpp: {file_type: cppSource}
+      - software_test/main.c: {file_type: cSource}
+      - software_test/tusb_config.h: {is_include_file: true, file_type: cppSource}
+      # TinyUSB now relative to the root of this core file
+      - tinyusb/src/tusb.c: {file_type: cSource}
+      - tinyusb/src/common/tusb_fifo.c: {file_type: cSource}
+      - tinyusb/src/host/usbh.c: {file_type: cSource}
+      - tinyusb/src/host/hub.c: {file_type: cSource}
+      - tinyusb/src/portable/aft/aftx07/hcd_aftx07.c: {file_type: cSource}
+    file_type: cppSource
+
 targets:
-  default: &default
+  sim:
+    default_tool: verilator
     filesets:
       - rtl
-    toplevel: usbh_host_tb_wrapper
-
-  sim-tinyusb:
-    <<: *default
-    description: Simulate USB IP running the TinyUSB stack
-    default_tool: verilator
-    filesets_append:
       - software_tb
-    toplevel: usbh_host_tb_wrapper
+    description: Simulate USB IP running the TinyUSB stack via Verilator
     tools:
       verilator:
         mode: cc
@@ -55,5 +47,7 @@ targets:
           - --trace-structs
           - -Wno-UNOPTFLAT
           - -Wno-fatal
-          # ADDED src/common and src/host to the include paths!
-          - -CFLAGS "-DUSB_TESTBENCH -I../../../software_test -I../../../../tinyusb/src -I../../../../tinyusb/src/common -I../../../../tinyusb/src/host -I../../../../tinyusb/src/portable/aft/aftx07"
+          - -Isrc_v
+          # CFLAGS adjusted: one less level of ../ because tinyusb moved into the root
+          - -CFLAGS "-DUSB_TESTBENCH -I../../../software_test -I../../../tinyusb/src -I../../../tinyusb/src/common -I../../../tinyusb/src/host -I../../../tinyusb/src/portable/aft/aftx07"
+    toplevel: usbh_host_tb_wrapper
