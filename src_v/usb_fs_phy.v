@@ -40,7 +40,7 @@ module usb_fs_phy
 (
     // Inputs
      input           clk_i
-    ,input           rst_i
+    ,input           n_rst_i
     ,input  [  7:0]  utmi_data_out_i
     ,input           utmi_txvalid_i
     ,input  [  1:0]  utmi_op_mode_i
@@ -120,8 +120,8 @@ reg         rx_dn_ms;
 reg         rxd_ms;
 
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
 begin
     rx_dp_ms <= 1'b0;
     rx_dn_ms <= 1'b0;
@@ -147,8 +147,8 @@ reg         rxd0_q;
 reg         rxd1_q;
 reg         rxd_q;
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
 begin
     rx_dp0_q    <= 1'b0;
     rx_dn0_q    <= 1'b0;
@@ -380,8 +380,8 @@ begin
 end
 
 // Update state
-always @ (posedge rst_i or posedge clk_i)
-if (rst_i)
+always @ (negedge n_rst_i or posedge clk_i)
+if (!n_rst_i)
     state_q   <= STATE_IDLE;
 else
     state_q   <= next_state_r;
@@ -389,8 +389,8 @@ else
 //-----------------------------------------------------------------
 // SYNC detect
 //-----------------------------------------------------------------
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     sync_j_detected_q  <= 1'b0;
 // Reset sync detect state in IDLE
 else if (state_q == STATE_IDLE)
@@ -404,8 +404,8 @@ else if (state_q == STATE_RX_SYNC_J)
 //-----------------------------------------------------------------
 reg rx_error_q;
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     rx_error_q  <= 1'b0;
 // Rx bit stuffing error
 else if (ones_count_q == 3'd7)
@@ -426,8 +426,8 @@ assign utmi_rxerror_o = rx_error_q;
 //-----------------------------------------------------------------
 reg rxd_last_q;
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     rxd_last_q  <= 1'b0;
 else
     rxd_last_q  <= in_j_w;
@@ -440,8 +440,8 @@ assign bit_edge_w = rxd_last_q ^ in_j_w;
 reg [1:0] sample_cnt_q;
 reg       adjust_delayed_q;
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
 begin
     sample_cnt_q        <= 2'd0;
     adjust_delayed_q    <= 1'b0;
@@ -473,8 +473,8 @@ reg rxd_last_j_q;
 // 1 = same state
 // After 6 consequitive 1's, a 0 is inserted to maintain the transitions
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     rxd_last_j_q  <= 1'b0;
 else if ((state_q == STATE_IDLE) || sample_w)
     rxd_last_j_q  <= in_j_w;
@@ -484,8 +484,8 @@ assign bit_transition_w = sample_w ? rxd_last_j_q ^ in_j_w : 1'b0;
 //-----------------------------------------------------------------
 // Bit Counters
 //-----------------------------------------------------------------
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     ones_count_q <= 3'd1;
 // The packet starts with a double K (no transition)
 else if (state_q == STATE_IDLE)
@@ -511,8 +511,8 @@ end
 assign bit_stuff_bit_w     = (ones_count_q == 3'd6);
 assign next_is_bit_stuff_w = (ones_count_q == 3'd5) && !bit_transition_w;
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     bit_count_q <= 3'b0;
 else if ((state_q == STATE_IDLE) || (state_q == STATE_RX_SYNC_K))
     bit_count_q <= 3'b0;
@@ -524,8 +524,8 @@ else if (((state_q == STATE_TX_SYNC) || (state_q == STATE_RX_SYNC_J)) && sample_
 //-----------------------------------------------------------------
 // Shift register
 //-----------------------------------------------------------------
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     data_q  <= 8'b0;
 // Pre-load shift register with SYNC word
 else if (state_q == STATE_IDLE)
@@ -557,8 +557,8 @@ assign utmi_data_in_o  = data_q;
 //-----------------------------------------------------------------
 reg rx_ready_q;
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     rx_ready_q <= 1'b0;
 else if ((state_q == STATE_RX_ACTIVE) && sample_w && (bit_count_q == 3'd7) && !bit_stuff_bit_w)
     rx_ready_q <= 1'b1;
@@ -572,8 +572,8 @@ assign utmi_rxvalid_o  = rx_ready_q;
 //-----------------------------------------------------------------
 reg tx_ready_q;
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     tx_ready_q <= 1'b0;
 else if ((state_q == STATE_TX_SYNC) && sample_w && (bit_count_q == 3'd7))
     tx_ready_q <= 1'b1;
@@ -587,8 +587,8 @@ assign utmi_txready_o  = tx_ready_q;
 //-----------------------------------------------------------------
 // EOP pending
 //-----------------------------------------------------------------
-always @ (posedge rst_i or posedge clk_i)
-if (rst_i)
+always @ (negedge n_rst_i or posedge clk_i)
+if (!n_rst_i)
     send_eop_q  <= 1'b0;
 else if ((state_q == STATE_TX_ACTIVE) && !utmi_txvalid_i)
     send_eop_q  <= 1'b1;
@@ -600,8 +600,8 @@ else if (state_q == STATE_TX_EOP0)
 //-----------------------------------------------------------------
 wire out_bit_w = sample_w ? data_q[0] : 1'bz;
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
 begin
     out_dp_q <= 1'b0;
     out_dn_q <= 1'b0;
@@ -659,8 +659,8 @@ end
 //-----------------------------------------------------------------
 reg [6:0] se0_cnt_q;
 
-always @ (posedge clk_i or posedge rst_i)
-if (rst_i)
+always @ (posedge clk_i or negedge n_rst_i)
+if (!n_rst_i)
     se0_cnt_q <= 7'b0;
 else if (in_se0_w)
 begin
