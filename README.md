@@ -1,11 +1,12 @@
-### SOCET SIMULATION:
+# ////// SOCET SIMULATION ////////
 
 for fusesoc build:
 
-fusesoc run --target=sim socet:usb:core_usb_host:1.0.0
+```fusesoc run --target=sim socet:usb:core_usb_host:1.0.0```
 
 (WAVES/TRACES ARE ENABLED)
 
+# ////// REST IS JUST IP README ////////
 
 ### USB 1.1 Host Controller
 
