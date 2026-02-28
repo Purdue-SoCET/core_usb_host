@@ -9,7 +9,7 @@ module usbh_host_tb_wrapper(
     input logic usb_dn_i,
     output logic usb_dp_o,
     output logic usb_dn_o,
-    output logic usb_tx_oen
+    output logic usb_tx_oen // Might not be necesarry but included in case we need to mux between input and output dp and dn
     );
 
     // UTMI interface for controller <-> PHY
@@ -35,6 +35,8 @@ module usbh_host_tb_wrapper(
     logic usb_tx_dp_o;
     logic usb_tx_dn_o;
     logic usb_tx_oen_o;
+
+    assign usb_tx_oen = usb_tx_oen_o;
 
 
     usbh_host_controller #(
@@ -90,9 +92,11 @@ module usbh_host_tb_wrapper(
         .usb_phy_tx_dp_i(usb_tx_dp_o),
         .usb_phy_tx_dn_i(usb_tx_dn_o),
         .usb_phy_tx_oen_i(usb_tx_oen_o),
-        .mode_i(), // TODO double check if this should be set high or low
-        .usb_dp_io(), // actual usb dp port
-        .usb_dn_io(), // actual usb dn port
+        .mode_i(1'b1), // TODO double check if this should be set high or low
+        .usb_dp_i(usb_dp_i), // actual usb dp port
+        .usb_dn_i(usb_dn_i), // actual usb dn port
+        .usb_dn_o(usb_dp_o), // actual usb dn port
+        .usb_dn_o(usb_dn_o), // actual usb dn port
         .usb_phy_rx_rcv_o(usb_rx_rcv_i),
         .usb_phy_rx_dp_o(usb_rx_dp_i),
         .usb_phy_rx_dn_o(usb_rx_dn_i)

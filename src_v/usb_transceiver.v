@@ -44,9 +44,13 @@ module usb_transceiver
     ,input           usb_phy_tx_oen_i
     ,input           mode_i
 
+    // 4 port usb interface
+    ,input           usb_dp_i
+    ,input           usb_dn_i
+    ,output          usb_dp_o
+    ,output          usb_dn_o
+
     // Outputs
-    ,inout          usb_dp_io
-    ,inout          usb_dn_io
     ,output          usb_phy_rx_rcv_o
     ,output          usb_phy_rx_dp_o
     ,output          usb_phy_rx_dn_o
@@ -74,16 +78,17 @@ reg out_dn;
 // Assignments
 //-----------------------------------------------------------------
 
-// D+/D- Tristate buffers
-assign usb_dp_io = (usb_phy_tx_oen_i == 1'b0) ? out_dp : 1'bz;
-assign usb_dn_io = (usb_phy_tx_oen_i == 1'b0) ? out_dn : 1'bz;
+assign usb_dp_o = out_dp;
+assign usb_dn_o = out_dn;
+
+
 
 // Receive D+/D-
-assign usb_phy_rx_dp_o = usb_dp_io;
-assign usb_phy_rx_dn_o = usb_dn_io;
+assign usb_phy_rx_dp_o = usb_dp_i;
+assign usb_phy_rx_dn_o = usb_dn_i;
 
 // Receive output
-assign usb_phy_rx_rcv_o = (usb_dp_io == 1'b1 && usb_dn_io == 1'b0) ? 1'b1 : 1'b0;
+assign usb_phy_rx_rcv_o = (usb_dp_i == 1'b1 && usb_dn_i == 1'b0) ? 1'b1 : 1'b0;
 
 // PHY Transmit Mode:
 // When phy_tx_mode_i is '0' the outputs are encoded as:
