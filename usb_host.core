@@ -18,10 +18,10 @@ filesets:
       - src_v/usbh_crc16.v
       - src_v/usbh_fifo.v
       - src_v/usbh_sie.v
-      - src_v/usbh_host.sv
+      - src_v/usbh_host_controller.sv
       - src_v/usb_fs_phy.v
       - src_v/transceiver.v
-      - src_v/usbh_host_tb_wrapper.sv # Our new top-level wrapper
+      - src_v/usbh_host.sv # Our new top-level wrapper
     file_type: systemVerilogSource
 
   software_tb:
