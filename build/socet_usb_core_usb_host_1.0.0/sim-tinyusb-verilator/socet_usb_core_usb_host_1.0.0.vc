@@ -15,3 +15,7 @@ src/socet_usb_core_usb_host_1.0.0/src_v/usbh_host_tb_wrapper.sv
 src/socet_usb_core_usb_host_1.0.0/software_test/test_top.cpp
 src/socet_usb_core_usb_host_1.0.0/software_test/main.c
 src/socet_usb_core_usb_host_1.0.0/../tinyusb/src/portable/aft/aftx07/hcd_aftx07.c
+src/socet_usb_core_usb_host_1.0.0/../tinyusb/src/tusb.c
+src/socet_usb_core_usb_host_1.0.0/../tinyusb/src/common/tusb_fifo.c
+src/socet_usb_core_usb_host_1.0.0/../tinyusb/src/host/usbh.c
+src/socet_usb_core_usb_host_1.0.0/../tinyusb/src/host/hub.c

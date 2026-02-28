@@ -11,6 +11,15 @@
 extern "C" {
 #endif
     extern void tick();
+    int app_main(void);
+    
+    // --- ADDED: Provide TinyUSB with a simulated clock ---
+    uint32_t tusb_time_millis_api(void) {
+        static uint32_t simulated_ms = 0;
+        simulated_ms++; // Just tick time forward artificially
+        return simulated_ms;
+    }
+    
 #ifdef __cplusplus
 }
 #endif

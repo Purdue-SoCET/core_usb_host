@@ -43,6 +43,18 @@ files:
 - file_type: cSource
   name: src/socet_usb_core_usb_host_1.0.0/../tinyusb/src/portable/aft/aftx07/hcd_aftx07.c
   core: socet:usb:core_usb_host:1.0.0
+- file_type: cSource
+  name: src/socet_usb_core_usb_host_1.0.0/../tinyusb/src/tusb.c
+  core: socet:usb:core_usb_host:1.0.0
+- file_type: cSource
+  name: src/socet_usb_core_usb_host_1.0.0/../tinyusb/src/common/tusb_fifo.c
+  core: socet:usb:core_usb_host:1.0.0
+- file_type: cSource
+  name: src/socet_usb_core_usb_host_1.0.0/../tinyusb/src/host/usbh.c
+  core: socet:usb:core_usb_host:1.0.0
+- file_type: cSource
+  name: src/socet_usb_core_usb_host_1.0.0/../tinyusb/src/host/hub.c
+  core: socet:usb:core_usb_host:1.0.0
 hooks: {}
 name: socet_usb_core_usb_host_1.0.0
 parameters: {}
@@ -57,7 +69,7 @@ tool_options:
     - -Wno-UNOPTFLAT
     - -Wno-fatal
     - -CFLAGS "-DUSB_TESTBENCH -I../../../software_test -I../../../../tinyusb/src
-      -I../../../../tinyusb/src/portable/aft/aftx07"
+      -I../../../../tinyusb/src/common -I../../../../tinyusb/src/host -I../../../../tinyusb/src/portable/aft/aftx07"
 toplevel: usbh_host_tb_wrapper
 vpi: []
 flow_options: {}

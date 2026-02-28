@@ -2,5 +2,5 @@
 
 TOP_MODULE        := usbh_host_tb_wrapper
 VC_FILE           := socet_usb_core_usb_host_1.0.0.vc
-VERILATOR_OPTIONS := --exe --build --trace-fst --trace-structs -Wno-UNOPTFLAT -Wno-fatal -CFLAGS "-DUSB_TESTBENCH -I../../../software_test -I../../../../tinyusb/src -I../../../../tinyusb/src/portable/aft/aftx07"
+VERILATOR_OPTIONS := --exe --build --trace-fst --trace-structs -Wno-UNOPTFLAT -Wno-fatal -CFLAGS "-DUSB_TESTBENCH -I../../../software_test -I../../../../tinyusb/src -I../../../../tinyusb/src/common -I../../../../tinyusb/src/host -I../../../../tinyusb/src/portable/aft/aftx07"
 MAKE_OPTIONS      := 

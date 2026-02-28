@@ -7,7 +7,10 @@ vluint64_t main_time = 0;
 
 extern "C" int app_main(void);
 
-void tick() {
+// Change this:
+// void tick() {
+// To this:
+extern "C" void tick() {
     top->clk_i = 1;
     top->eval();
     main_time += 5;

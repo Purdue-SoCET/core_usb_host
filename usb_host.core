@@ -27,6 +27,10 @@ filesets:
       - software_test/test_top.cpp : {file_type: cppSource}
       - software_test/main.c : {file_type: cSource}
       - ../tinyusb/src/portable/aft/aftx07/hcd_aftx07.c : {file_type: cSource}
+      - ../tinyusb/src/tusb.c : {file_type: cSource}
+      - ../tinyusb/src/common/tusb_fifo.c : {file_type: cSource}
+      - ../tinyusb/src/host/usbh.c : {file_type: cSource}
+      - ../tinyusb/src/host/hub.c : {file_type: cSource}
     
 targets:
   default: &default
@@ -51,5 +55,5 @@ targets:
           - --trace-structs
           - -Wno-UNOPTFLAT
           - -Wno-fatal
-          # FIXED CFLAGS: Go up 3 dirs for software_test, and up 4 dirs to reach AFT-dev/tinyusb/...
-          - -CFLAGS "-DUSB_TESTBENCH -I../../../software_test -I../../../../tinyusb/src -I../../../../tinyusb/src/portable/aft/aftx07"
+          # ADDED src/common and src/host to the include paths!
+          - -CFLAGS "-DUSB_TESTBENCH -I../../../software_test -I../../../../tinyusb/src -I../../../../tinyusb/src/common -I../../../../tinyusb/src/host -I../../../../tinyusb/src/portable/aft/aftx07"
