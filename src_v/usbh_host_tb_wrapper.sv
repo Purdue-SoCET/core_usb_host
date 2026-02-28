@@ -28,6 +28,15 @@ module usbh_host_tb_wrapper(
     logic utmi_dppulldown_o;
     logic utmi_dmpulldown_o;
 
+    // PHY <-> Transciever
+    logic usb_rx_rcv_i;
+    logic usb_rx_dp_i;
+    logic usb_rx_dn_i;
+    logic usb_tx_dp_o;
+    logic usb_tx_dn_o;
+    logic usb_tx_oen_o;
+
+
     usbh_host #(
         .USB_CLK_FREQ(48000000)
     ) controller (
@@ -60,9 +69,9 @@ module usbh_host_tb_wrapper(
         .utmi_termselect_i(utmi_termselect_o),
         .utmi_dppulldown_i(utmi_dppulldown_o),
         .utmi_dmpulldown_i(utmi_dmpulldown_o),
-        .usb_rx_rcv_i(), // transciever
-        .usb_rx_dp_i(), // transciever
-        .usb_rx_dn_i(), // transciever
+        .usb_rx_rcv_i(usb_rx_rcv_i), // transciever
+        .usb_rx_dp_i(usb_rx_dp_i), // transciever
+        .usb_rx_dn_i(usb_rx_dn_i), // transciever
         .usb_reset_assert_i(1'b0),
         .utmi_data_in_o(utmi_data_in_i),
         .utmi_txready_o(utmi_txready_i),
@@ -70,11 +79,23 @@ module usbh_host_tb_wrapper(
         .utmi_rxactive_o(utmi_rxactive_i),
         .utmi_rxerror_o(utmi_rxerror_i),
         .utmi_linestate_o(utmi_linestate_i),
-        .usb_tx_dp_o(), // transciever
-        .usb_tx_dn_o(), // transciever
-        .usb_tx_oen_o(), // transciever
+        .usb_tx_dp_o(usb_tx_dp_o), // transciever
+        .usb_tx_dn_o(usb_tx_dn_o), // transciever
+        .usb_tx_oen_o(usb_tx_oen_o), // transciever
         .usb_reset_detect_o(),
         .usb_en_o()
     );
+
+    usb_transceiver transciever (
+        .usb_phy_tx_dp_i(usb_tx_dp_o),
+        .usb_phy_tx_dn_i(usb_tx_dn_o),
+        .usb_phy_tx_oen_i(usb_tx_oen_o),
+        .mode_i(), // TODO double check if this should be set high or low
+        .usb_dp_io(), // actual usb dp port
+        .usb_dn_io(), // actual usb dn port
+        .usb_phy_rx_rcv_o(usb_rx_rcv_i),
+        .usb_phy_rx_dp_o(usb_rx_dp_i),
+        .usb_phy_rx_dn_o(usb_rx_dn_i)
+    )
 
 endmodule
