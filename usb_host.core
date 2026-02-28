@@ -1,0 +1,46 @@
+CAPI=2:
+name: socet:usb:core_usb_host:1.0.0
+description: USB Host IP with Verilator TinyUSB testbench
+
+filesets:
+  rtl:
+    files:
+      - src_v/usbh_host_defs.v: {is_include_file: true}
+      - src_v/usbh_crc5.v
+      - src_v/usbh_crc16.v
+      - src_v/usbh_fifo.v
+      - src_v/usbh_sie.v
+      - src_v/usbh_host.sv
+    file_type: systemVerilogSource
+
+  software_tb:
+    files:
+      # Verilator C++ Wrapper
+      - software_test/test_top.cpp : {file_type: cppSource}
+      # TinyUSB and HCD Software
+      - software_test/main.c : {file_type: cSource}
+      - ../tinyusb/src/portable/aft/aftx07/hcd_aftx07.c : {file_type: cSource}
+      # Include any other required TinyUSB source files here (e.g., tuh.c, etc.)
+    
+targets:
+  default: &default
+    filesets:
+      - rtl
+    toplevel: usbh_host
+
+  sim-tinyusb:
+    <<: *default
+    description: Simulate USB IP running the TinyUSB stack
+    default_tool: verilator
+    filesets_append:
+      - software_tb
+    toplevel: usbh_host
+    tools:
+      verilator:
+        mode: cc
+        verilator_options:
+          - --exe
+          - --build
+          - --trace-fst
+          - --trace-structs
+          - -CFLAGS "-DUSB_TESTBENCH -I../../aftx07 -I../../software_test" # Pass testbench flag and include paths

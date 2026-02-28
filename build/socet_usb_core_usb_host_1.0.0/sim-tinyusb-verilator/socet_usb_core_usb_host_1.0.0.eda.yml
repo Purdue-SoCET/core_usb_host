@@ -1,0 +1,47 @@
+version: 0.2.1
+dependencies:
+  socet:usb:core_usb_host:1.0.0: []
+files:
+- file_type: systemVerilogSource
+  is_include_file: true
+  name: src/socet_usb_core_usb_host_1.0.0/src_v/usbh_host_defs.v
+  core: socet:usb:core_usb_host:1.0.0
+- file_type: systemVerilogSource
+  name: src/socet_usb_core_usb_host_1.0.0/src_v/usbh_crc5.v
+  core: socet:usb:core_usb_host:1.0.0
+- file_type: systemVerilogSource
+  name: src/socet_usb_core_usb_host_1.0.0/src_v/usbh_crc16.v
+  core: socet:usb:core_usb_host:1.0.0
+- file_type: systemVerilogSource
+  name: src/socet_usb_core_usb_host_1.0.0/src_v/usbh_fifo.v
+  core: socet:usb:core_usb_host:1.0.0
+- file_type: systemVerilogSource
+  name: src/socet_usb_core_usb_host_1.0.0/src_v/usbh_sie.v
+  core: socet:usb:core_usb_host:1.0.0
+- file_type: systemVerilogSource
+  name: src/socet_usb_core_usb_host_1.0.0/src_v/usbh_host.sv
+  core: socet:usb:core_usb_host:1.0.0
+- file_type: cppSource
+  name: src/socet_usb_core_usb_host_1.0.0/software_test/test_top.cpp
+  core: socet:usb:core_usb_host:1.0.0
+- file_type: cSource
+  name: src/socet_usb_core_usb_host_1.0.0/software_test/main.c
+  core: socet:usb:core_usb_host:1.0.0
+- file_type: cSource
+  name: src/socet_usb_core_usb_host_1.0.0/../tinyusb/src/portable/aft/aftx07/hcd_aftx07.c
+  core: socet:usb:core_usb_host:1.0.0
+hooks: {}
+name: socet_usb_core_usb_host_1.0.0
+parameters: {}
+tool_options:
+  verilator:
+    mode: cc
+    verilator_options:
+    - --exe
+    - --build
+    - --trace-fst
+    - --trace-structs
+    - -CFLAGS "-DUSB_TESTBENCH -I../../aftx07 -I../../software_test"
+toplevel: usbh_host
+vpi: []
+flow_options: {}

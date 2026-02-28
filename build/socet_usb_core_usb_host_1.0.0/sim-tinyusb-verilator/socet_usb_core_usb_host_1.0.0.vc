@@ -1,0 +1,14 @@
+--Mdir .
+--cc
++incdir+src/socet_usb_core_usb_host_1.0.0/src_v
+-CFLAGS -Isrc/socet_usb_core_usb_host_1.0.0/src_v
+src/socet_usb_core_usb_host_1.0.0/src_v/usbh_crc5.v
+src/socet_usb_core_usb_host_1.0.0/src_v/usbh_crc16.v
+src/socet_usb_core_usb_host_1.0.0/src_v/usbh_fifo.v
+src/socet_usb_core_usb_host_1.0.0/src_v/usbh_sie.v
+src/socet_usb_core_usb_host_1.0.0/src_v/usbh_host.sv
+--top-module usbh_host
+--exe
+src/socet_usb_core_usb_host_1.0.0/software_test/test_top.cpp
+src/socet_usb_core_usb_host_1.0.0/software_test/main.c
+src/socet_usb_core_usb_host_1.0.0/../tinyusb/src/portable/aft/aftx07/hcd_aftx07.c
