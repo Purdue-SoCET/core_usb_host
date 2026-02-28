@@ -2,12 +2,15 @@
 --cc
 +incdir+src/socet_usb_core_usb_host_1.0.0/src_v
 -CFLAGS -Isrc/socet_usb_core_usb_host_1.0.0/src_v
+src/socet_bus-components_ahb_if_0.0.1/ahb_if.sv
+src/socet_bus-components_bus_protocol_if_0.0.1/bus_protocol_if.sv
 src/socet_usb_core_usb_host_1.0.0/src_v/usbh_crc5.v
 src/socet_usb_core_usb_host_1.0.0/src_v/usbh_crc16.v
 src/socet_usb_core_usb_host_1.0.0/src_v/usbh_fifo.v
 src/socet_usb_core_usb_host_1.0.0/src_v/usbh_sie.v
 src/socet_usb_core_usb_host_1.0.0/src_v/usbh_host.sv
---top-module usbh_host
+src/socet_usb_core_usb_host_1.0.0/src_v/usbh_host_tb_wrapper.sv
+--top-module usbh_host_tb_wrapper
 --exe
 src/socet_usb_core_usb_host_1.0.0/software_test/test_top.cpp
 src/socet_usb_core_usb_host_1.0.0/software_test/main.c

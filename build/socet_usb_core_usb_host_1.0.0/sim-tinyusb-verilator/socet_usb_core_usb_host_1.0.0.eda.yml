@@ -1,7 +1,17 @@
 version: 0.2.1
 dependencies:
-  socet:usb:core_usb_host:1.0.0: []
+  socet:bus-components:ahb_if:0.0.1: []
+  socet:bus-components:bus_protocol_if:0.0.1: []
+  socet:usb:core_usb_host:1.0.0:
+  - socet:bus-components:ahb_if:0.0.1
+  - socet:bus-components:bus_protocol_if:0.0.1
 files:
+- file_type: systemVerilogSource
+  name: src/socet_bus-components_ahb_if_0.0.1/ahb_if.sv
+  core: socet:bus-components:ahb_if:0.0.1
+- file_type: systemVerilogSource
+  name: src/socet_bus-components_bus_protocol_if_0.0.1/bus_protocol_if.sv
+  core: socet:bus-components:bus_protocol_if:0.0.1
 - file_type: systemVerilogSource
   is_include_file: true
   name: src/socet_usb_core_usb_host_1.0.0/src_v/usbh_host_defs.v
@@ -20,6 +30,9 @@ files:
   core: socet:usb:core_usb_host:1.0.0
 - file_type: systemVerilogSource
   name: src/socet_usb_core_usb_host_1.0.0/src_v/usbh_host.sv
+  core: socet:usb:core_usb_host:1.0.0
+- file_type: systemVerilogSource
+  name: src/socet_usb_core_usb_host_1.0.0/src_v/usbh_host_tb_wrapper.sv
   core: socet:usb:core_usb_host:1.0.0
 - file_type: cppSource
   name: src/socet_usb_core_usb_host_1.0.0/software_test/test_top.cpp
@@ -41,7 +54,10 @@ tool_options:
     - --build
     - --trace-fst
     - --trace-structs
-    - -CFLAGS "-DUSB_TESTBENCH -I../../aftx07 -I../../software_test"
-toplevel: usbh_host
+    - -Wno-UNOPTFLAT
+    - -Wno-fatal
+    - -CFLAGS "-DUSB_TESTBENCH -I../../../software_test -I../../../../tinyusb/src
+      -I../../../../tinyusb/src/portable/aft/aftx07"
+toplevel: usbh_host_tb_wrapper
 vpi: []
 flow_options: {}

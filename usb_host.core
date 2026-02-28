@@ -4,29 +4,35 @@ description: USB Host IP with Verilator TinyUSB testbench
 
 filesets:
   rtl:
+    depend:
+      # Add the new AHB interface dependency here
+      - socet:bus-components:ahb_if
+      - socet:bus-components:bus_protocol_if # <-- ADD THIS LINE
+      # Note: If bus_protocol_if is also a separate core, add it here too!
+      # - socet:digital-lib:bus_protocol 
     files:
+      # If bus_protocol_if is NOT a separate core, include its file path here instead:
+      # - ../common/bus_protocol_if.sv
       - src_v/usbh_host_defs.v: {is_include_file: true}
       - src_v/usbh_crc5.v
       - src_v/usbh_crc16.v
       - src_v/usbh_fifo.v
       - src_v/usbh_sie.v
       - src_v/usbh_host.sv
+      - src_v/usbh_host_tb_wrapper.sv # Our new top-level wrapper
     file_type: systemVerilogSource
 
   software_tb:
     files:
-      # Verilator C++ Wrapper
       - software_test/test_top.cpp : {file_type: cppSource}
-      # TinyUSB and HCD Software
       - software_test/main.c : {file_type: cSource}
       - ../tinyusb/src/portable/aft/aftx07/hcd_aftx07.c : {file_type: cSource}
-      # Include any other required TinyUSB source files here (e.g., tuh.c, etc.)
     
 targets:
   default: &default
     filesets:
       - rtl
-    toplevel: usbh_host
+    toplevel: usbh_host_tb_wrapper
 
   sim-tinyusb:
     <<: *default
@@ -34,7 +40,7 @@ targets:
     default_tool: verilator
     filesets_append:
       - software_tb
-    toplevel: usbh_host
+    toplevel: usbh_host_tb_wrapper
     tools:
       verilator:
         mode: cc
@@ -43,4 +49,7 @@ targets:
           - --build
           - --trace-fst
           - --trace-structs
-          - -CFLAGS "-DUSB_TESTBENCH -I../../aftx07 -I../../software_test" # Pass testbench flag and include paths
+          - -Wno-UNOPTFLAT
+          - -Wno-fatal
+          # FIXED CFLAGS: Go up 3 dirs for software_test, and up 4 dirs to reach AFT-dev/tinyusb/...
+          - -CFLAGS "-DUSB_TESTBENCH -I../../../software_test -I../../../../tinyusb/src -I../../../../tinyusb/src/portable/aft/aftx07"
