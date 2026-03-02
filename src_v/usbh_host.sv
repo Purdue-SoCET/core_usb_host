@@ -100,6 +100,6 @@ module usbh_host(
         .usb_phy_rx_rcv_o(usb_rx_rcv_i),
         .usb_phy_rx_dp_o(usb_rx_dp_i),
         .usb_phy_rx_dn_o(usb_rx_dn_i)
-    )
+    );
 
 endmodule
