@@ -15,18 +15,39 @@ extern "C" int app_main(void);
 // void tick() {
 // To this:
 extern "C" void tick() {
-    top->clk_i = 0;
-    main_time += 5;
-    top->eval();
-    tracep->dump(main_time);
-    top->clk_i = 1;
-    main_time += 5;
-    top->eval();
-    tracep->dump(main_time);
+    static bool in_interrupt = false;
+    static int response_delay = 0;
+    static bool last_tx_valid = false; // Track previous state
 
-    // If hardware interrupt is high, tell TinyUSB to check status registers
-    if (top->intr_o) {
+    // Advance Clock
+    top->clk_i = 0; main_time += 5; top->eval();
+    if (tracep) tracep->dump(main_time);
+    top->clk_i = 1; main_time += 5; top->eval();
+    if (tracep) tracep->dump(main_time);
+
+    // 1. Fixed Dummy Device Logic: Only respond after the host finishes a transmission
+    if (last_tx_valid && top->utmi_txvalid_o == 0) {
+        response_delay = 20; // Wait 20 cycles after host stops
+    }
+    last_tx_valid = top->utmi_txvalid_o;
+
+    if (response_delay > 1) {
+        response_delay--;
+    } else if (response_delay == 1) {
+        top->utmi_rxactive_i = 1;
+        top->utmi_rxvalid_i = 1;
+        top->utmi_data_in_i = 0xD2; // PID_ACK
+        response_delay = 0;
+    } else {
+        top->utmi_rxactive_i = 0;
+        top->utmi_rxvalid_i = 0;
+    }
+
+    // 2. Re-entry guard for Interrupts
+    if (top->intr_o && !in_interrupt) {
+        in_interrupt = true;
         hcd_int_handler(0, true); 
+        in_interrupt = false;
     }
 }
 
@@ -86,6 +107,11 @@ int main(int argc, char** argv) {
     tracep->open("waveform.fst");
 
     reset_ip();
+    // Simulate a Full-Speed device being plugged in (D+ pulled high)
+    // UTMI Linestate: 01 = FS (D+ high), 10 = LS (D- high)
+    top->utmi_linestate_i = 1; 
+    for (int i = 0; i < 100; i++) tick(); // Give the host time to see it
+
     app_main();
 
     tracep->close();
