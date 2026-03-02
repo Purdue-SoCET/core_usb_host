@@ -1,4 +1,4 @@
-module usbh_host_tb_wrapper(
+module usbh_host(
     // System Bus
     input logic clk,
     input logic n_rst,
