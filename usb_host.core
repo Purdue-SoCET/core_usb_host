@@ -22,7 +22,6 @@ filesets:
       - software_test/test_top.cpp: {file_type: cppSource}
       - software_test/main.c: {file_type: cSource}
       - software_test/tusb_config.h: {is_include_file: true, file_type: cppSource}
-      # TinyUSB now relative to the root of this core file
       - tinyusb/src/tusb.c: {file_type: cSource}
       - tinyusb/src/common/tusb_fifo.c: {file_type: cSource}
       - tinyusb/src/host/usbh.c: {file_type: cSource}
@@ -48,6 +47,5 @@ targets:
           - -Wno-UNOPTFLAT
           - -Wno-fatal
           - -Isrc_v
-          # CFLAGS adjusted: one less level of ../ because tinyusb moved into the root
           - -CFLAGS "-DUSB_TESTBENCH -I../../../software_test -I../../../tinyusb/src -I../../../tinyusb/src/common -I../../../tinyusb/src/host -I../../../tinyusb/src/portable/aft/aftx07"
     toplevel: usbh_host_tb_wrapper

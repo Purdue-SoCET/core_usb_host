@@ -11,9 +11,6 @@ VerilatedFstC *tracep = nullptr;
 
 extern "C" int app_main(void);
 
-// Change this:
-// void tick() {
-// To this:
 extern "C" void tick() {
     static bool in_interrupt = false;
     static int response_delay = 0;
@@ -25,7 +22,7 @@ extern "C" void tick() {
     top->clk_i = 1; main_time += 5; top->eval();
     if (tracep) tracep->dump(main_time);
 
-    // 1. Fixed Dummy Device Logic: Only respond after the host finishes a transmission
+    // 1. Dummy Device Logic: Only respond after the host finishes a transmission
     if (last_tx_valid && top->utmi_txvalid_o == 0) {
         response_delay = 20; // Wait 20 cycles after host stops
     }
