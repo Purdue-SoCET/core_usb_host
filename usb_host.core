@@ -1,6 +1,6 @@
 CAPI=2:
 name: socet:usb:core_usb_host:1.0.0
-description: USB Host IP with Verilator TinyUSB testbench
+description: "USB Host IP with Verilator TinyUSB testbench"
 
 filesets:
   rtl:
@@ -39,6 +39,26 @@ targets:
     filesets:
       - rtl
     toplevel: usbh_host_tb_wrapper
+
+    sim:
+      <<: *default
+      description: Simulate USB IP by writing to host
+      default_tool: verilator
+      filesets_append:
+        - software_tb
+      toplevel: usbh_host_tb_wrapper
+      tools:
+        verilator:
+          mode: cc
+          verilator_options:
+            - --exe
+            - --build
+            - --trace-fst
+            - --trace-structs
+            - -Wno-UNOPTFLAT
+            - -Wno-fatal
+            # ADDED src/common and src/host to the include paths!
+            - -CFLAGS "-DUSB_TESTBENCH -I../../../software_test -I../../../../tinyusb/src -I../../../../tinyusb/src/common -I../../../../tinyusb/src/host -I../../../../tinyusb/src/portable/aft/aftx07"
 
   sim-tinyusb:
     <<: *default
