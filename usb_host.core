@@ -6,8 +6,8 @@ filesets:
   rtl:
     depend:
       # Add the new AHB interface dependency here
-      - socet:bus-components:ahb_if
-      - socet:bus-components:bus_protocol_if # <-- ADD THIS LINE
+      # - "socet:bus-components:ahb_if"
+      # - "socet:bus-components:bus_protocol_if" # <-- ADD THIS LINE
       # Note: If bus_protocol_if is also a separate core, add it here too!
       # - socet:digital-lib:bus_protocol 
     files:
@@ -38,27 +38,27 @@ targets:
   default: &default
     filesets:
       - rtl
-    toplevel: usbh_host_tb_wrapper
+    toplevel: usbh_host
 
-    sim:
-      <<: *default
-      description: Simulate USB IP by writing to host
-      default_tool: verilator
-      filesets_append:
-        - software_tb
-      toplevel: usbh_host_tb_wrapper
-      tools:
-        verilator:
-          mode: cc
-          verilator_options:
-            - --exe
-            - --build
-            - --trace-fst
-            - --trace-structs
-            - -Wno-UNOPTFLAT
-            - -Wno-fatal
-            # ADDED src/common and src/host to the include paths!
-            - -CFLAGS "-DUSB_TESTBENCH -I../../../software_test -I../../../../tinyusb/src -I../../../../tinyusb/src/common -I../../../../tinyusb/src/host -I../../../../tinyusb/src/portable/aft/aftx07"
+  sim:
+    <<: *default
+    description: Simulate USB IP by writing to host
+    default_tool: verilator
+    filesets_append:
+      - software_tb
+    toplevel: usbh_host
+    tools:
+      verilator:
+        mode: cc
+        verilator_options:
+          - --exe
+          - --build
+          - --trace-fst
+          - --trace-structs
+          - -Wno-UNOPTFLAT
+          - -Wno-fatal
+          # ADDED src/common and src/host to the include paths!
+          - -CFLAGS "-DUSB_TESTBENCH -I../../../software_test -I../../../../tinyusb/src -I../../../../tinyusb/src/common -I../../../../tinyusb/src/host -I../../../../tinyusb/src/portable/aft/aftx07"
 
   sim-tinyusb:
     <<: *default
