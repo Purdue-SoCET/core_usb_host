@@ -1,18 +1,12 @@
 CAPI=2:
 name: socet:usb:core_usb_host:1.0.0
-description: "USB Host IP with Verilator TinyUSB testbench"
+description: USB Host IP with Verilator TinyUSB testbench
 
 filesets:
   rtl:
     depend:
-      # Add the new AHB interface dependency here
-      # - "socet:bus-components:ahb_if"
-      # - "socet:bus-components:bus_protocol_if" # <-- ADD THIS LINE
-      # Note: If bus_protocol_if is also a separate core, add it here too!
-      # - socet:digital-lib:bus_protocol 
+      - "socet:bus-components:bus_protocol_if"
     files:
-      # If bus_protocol_if is NOT a separate core, include its file path here instead:
-      # - ../common/bus_protocol_if.sv
       - src_v/usbh_host_defs.v: {is_include_file: true}
       - src_v/usbh_crc5.v
       - src_v/usbh_crc16.v
@@ -20,7 +14,7 @@ filesets:
       - src_v/usbh_sie.v
       - src_v/usbh_host_controller.sv
       - src_v/usb_fs_phy.v
-      - src_v/transceiver.v
+      - src_v/usb_transceiver.v
       - src_v/usbh_host.sv # Our new top-level wrapper
     file_type: systemVerilogSource
 

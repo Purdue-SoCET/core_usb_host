@@ -95,7 +95,7 @@ module usbh_host(
         .mode_i(1'b1), // TODO double check if this should be set high or low
         .usb_dp_i(usb_dp_i), // actual usb dp port
         .usb_dn_i(usb_dn_i), // actual usb dn port
-        .usb_dn_o(usb_dp_o), // actual usb dn port
+        .usb_dp_o(usb_dp_o), // actual usb dn port
         .usb_dn_o(usb_dn_o), // actual usb dn port
         .usb_phy_rx_rcv_o(usb_rx_rcv_i),
         .usb_phy_rx_dp_o(usb_rx_dp_i),
