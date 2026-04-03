@@ -9,7 +9,8 @@ module usbh_host(
     input logic usb_dn_i,
     output logic usb_dp_o,
     output logic usb_dn_o,
-    output logic usb_tx_oen // Might not be necesarry but included in case we need to mux between input and output dp and dn
+    output logic usb_tx_oen, // Might not be necesarry but included in case we need to mux between input and output dp and dn
+    output logic usb_interrupt
     );
 
     // UTMI interface for controller <-> PHY
@@ -37,6 +38,7 @@ module usbh_host(
     logic usb_tx_oen_o;
 
     assign usb_tx_oen = usb_tx_oen_o;
+    assign usb_interrupt = intr_o;
 
 
     usbh_host_controller #(
@@ -95,7 +97,7 @@ module usbh_host(
         .mode_i(1'b1), // TODO double check if this should be set high or low
         .usb_dp_i(usb_dp_i), // actual usb dp port
         .usb_dn_i(usb_dn_i), // actual usb dn port
-        .usb_dp_o(usb_dp_o), // actual usb dn port
+        .usb_dp_o(usb_dp_o), // actual usb dp port
         .usb_dn_o(usb_dn_o), // actual usb dn port
         .usb_phy_rx_rcv_o(usb_rx_rcv_i),
         .usb_phy_rx_dp_o(usb_rx_dp_i),
