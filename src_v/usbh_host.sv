@@ -6,7 +6,7 @@ module usbh_host(
 
     // USB PHY ports
     input logic usb_rx_dp_i,
-    input logic usb_rx_dn_i
+    input logic usb_rx_dn_i,
     input logic usb_rx_rcv_i,
     output logic usb_tx_dp_o,
     output logic usb_tx_dn_o,
