@@ -31,7 +31,6 @@ module usbh_host(
     logic utmi_dmpulldown_o;
 
 
-    assign usb_tx_oen = usb_tx_oen_o;
     assign usb_interrupt = intr_o;
 
 
