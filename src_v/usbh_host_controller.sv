@@ -996,8 +996,7 @@ begin
     // Line state != SE0
     if (utmi_linestate_i != 2'b0)
         device_det_q <= 1'b1;
-
-    else if (usb_irq_ack_device_detect_out_w)  // ACK takes priority
+    else if (usb_irq_ack_device_detect_out_w)
         device_det_q <= 1'b0;
 
     err_cond_q  <= (status_crc_err_w | status_timeout_w);
