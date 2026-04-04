@@ -78,8 +78,9 @@ reg out_dn;
 // Assignments
 //-----------------------------------------------------------------
 
-assign usb_dp_o = out_dp;
-assign usb_dn_o = out_dn;
+// IRL the setting to zero would be setting to HI-Z
+assign usb_dp_o = (usb_phy_tx_oen_i == 1'b0) ? out_dp : 0;
+assign usb_dn_o = (usb_phy_tx_oen_i == 1'b0) ? out_dn : 0;
 
 
 
@@ -88,7 +89,7 @@ assign usb_phy_rx_dp_o = usb_dp_i;
 assign usb_phy_rx_dn_o = usb_dn_i;
 
 // Receive output
-assign usb_phy_rx_rcv_o = (usb_dp_i == 1'b1 && usb_dn_i == 1'b0) ? 1'b1 : 1'b0;
+assign usb_phy_rx_rcv_o = (usb_dp_i == 1'b1 && usb_dn_i == 1'b0) ? 1'b0 : 1'b0;
 
 // PHY Transmit Mode:
 // When phy_tx_mode_i is '0' the outputs are encoded as:
