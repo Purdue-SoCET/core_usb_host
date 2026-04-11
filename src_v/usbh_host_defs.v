@@ -298,7 +298,7 @@
     `define USB_WR_DATA_DATA_W          8
     `define USB_WR_DATA_DATA_R          7:0
 
-`define USB_RD_DATA    8'h20
+`define USB_RD_DATA    8'h24
 
     `define USB_RD_DATA_DATA_DEFAULT    0
     `define USB_RD_DATA_DATA_B          0

@@ -60,6 +60,7 @@ module usbh_host_controller
 
     // Outputs
     ,output         intr_o
+    ,output         intr_dev_det_o
     ,output [7:0]   utmi_data_out_o
     ,output         utmi_txvalid_o
     ,output [1:0]   utmi_op_mode_o
@@ -1003,13 +1004,13 @@ begin
 
     intr_q <= (intr_done_q  & usb_irq_mask_done_out_w) |
               (intr_err_q   & usb_irq_mask_err_out_w)  |
-              (intr_sof_q   & usb_irq_mask_sof_out_w)  |
-              (device_det_q & usb_irq_mask_device_detect_out_w);
+              (intr_sof_q   & usb_irq_mask_sof_out_w);
 end
 
 assign usb_irq_sts_device_detect_in_w = device_det_q;
 
 assign intr_o = intr_q;
+assign intr_dev_det_o = device_det_q & usb_irq_mask_device_detect_out_w;
 
 
 

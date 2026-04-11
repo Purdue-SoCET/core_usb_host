@@ -11,7 +11,8 @@ module usbh_host(
     output logic usb_tx_dp_o,
     output logic usb_tx_dn_o,
     output logic usb_tx_oen_o,
-    output logic usb_interrupt
+    output logic usb_interrupt,
+    output logic usb_dev_det_intr
     );
 
     // UTMI interface for controller <-> PHY
@@ -22,6 +23,7 @@ module usbh_host(
     logic utmi_rxerror_i;
     logic [1:0] utmi_linestate_i;
     logic intr_o;
+    logic intr_dev_det_o;
     logic [7:0] utmi_data_out_o;
     logic utmi_txvalid_o;
     logic [1:0] utmi_op_mode_o;
@@ -32,6 +34,7 @@ module usbh_host(
 
 
     assign usb_interrupt = intr_o;
+    assign usb_dev_det_intr = intr_dev_det_o;
 
 
     usbh_host_controller #(
@@ -53,7 +56,8 @@ module usbh_host(
         .utmi_xcvrselect_o(utmi_xcvrselect_o),
         .utmi_termselect_o(utmi_termselect_o),
         .utmi_dppulldown_o(utmi_dppulldown_o),
-        .utmi_dmpulldown_o(utmi_dmpulldown_o)
+        .utmi_dmpulldown_o(utmi_dmpulldown_o),
+        .intr_dev_det_o(intr_dev_det_o)
     );
 
     usb_fs_phy phy (
