@@ -70,8 +70,6 @@ module usbh_host_controller
     ,output         utmi_dmpulldown_o
 );
 
-assign busif.request_stall = 0; // shouldn't matter in this case
-
 //-----------------------------------------------------------------
 // Write address / data split
 //-----------------------------------------------------------------
@@ -96,7 +94,7 @@ always @ (posedge clk_i or negedge n_rst_i)
 if (!n_rst_i)
     wr_data_q <= 32'b0;
 else if (busif.wen)
-    wr_data_q <= busif.wdata;
+    wr_data_q <= busif.wdata; // TODO: maybe RAW?
 
 //-----------------------------------------------------------------
 // Request Logic
@@ -642,22 +640,26 @@ end
 //-----------------------------------------------------------------
 // Retime read response
 //-----------------------------------------------------------------
-reg [31:0] rd_data_q;
+reg [31:0] rd_data_q, rd_data_v;
 
 always @ (posedge clk_i or negedge n_rst_i)
-if (!n_rst_i)
+if (!n_rst_i) begin
     rd_data_q <= 32'b0;
-else if (busif.ren)
+    rd_data_v <= 0;
+end else if (busif.ren) begin
     rd_data_q <= data_r;
+    rd_data_v <= 1;
+end else begin
+    rd_data_v <= 0;
+end
 
 assign busif.rdata = rd_data_q;
 assign busif.error = 1'b0;
-
-
+assign busif.request_stall = busif.ren && !rd_data_v;
 
 assign busif.error  = 1'b0;
 
-wire usb_rd_data_rd_req_w = read_en_w & (busif.addr[7:0] == `USB_RD_DATA);
+wire usb_rd_data_rd_req_w = read_en_w & (busif.addr[7:0] == `USB_RD_DATA) && !rd_data_v;
 
 wire usb_wr_data_wr_req_w = usb_wr_data_wr_q;
 wire usb_rd_data_wr_req_w = usb_rd_data_wr_q;
